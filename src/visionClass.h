@@ -7,12 +7,16 @@
 // ***************************************************************************
 
 #pragma once
+#include <ros/ros.h>
 
 // Vision Class
 
 class Vision
 {
 private:
+    //ros variable
+    ros::Subscriber vision_sub;
+
 	// private variables
 	char cameraID;
 	int cameraXResolution;
@@ -24,7 +28,7 @@ private:
     float boundingboxHPosition;
     float boundingboxVPosition;
 
-public:
+public:   
 	// constructors
 	Vision();
 	Vision(char cameraID, int cameraXResolution, int cameraYResolution, float xpersonCoordinate, float ypersonCoordinate,
@@ -42,6 +46,8 @@ public:
     void getObjectID(int& objectID);
     void getXYZCoordinates(float& xpersonCoordinate, float& ypersonCoordinate, float& zpersonCoordinate);        
     // void getBoundingboxPosition(float& boundingboxHPosition, float& boundingboxVPosition);                                      
-
+    
+    //ros
+    void callback_data();
 };
 

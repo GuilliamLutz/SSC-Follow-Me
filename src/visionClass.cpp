@@ -43,6 +43,11 @@
        this-> boundingboxHPosition = boundingboxHPosition,
        this-> boundingboxVPosition = boundingboxVPosition;
     }
+
+    Vision(ros::NodeHandle *nh)
+    {
+        vision_sub = nh->subscribe("/vision_data", 1000,&Vision::callback_data,this);
+    }
    
 
 // Member functions for visionClass
@@ -90,21 +95,10 @@
         ypersonCoordinate = this-> ypersonCoordinate;
         zpersonCoordinate = this-> zpersonCoordinate;
     }
-//////////////////////////////////////////////////TEST FUNCTION 
-    void Vision::setDataPersonObjectSub()
-    {
-        void chatterCallback(const std_msgs::String::ConstPtr& msg)
-        {
-        ROS_INFO("I heard: [%s]", msg->data.c_str());
-        }
 
-        int main(int argc, char **argv)
-        {
-        ros::init(argc, argv, "listener");
-        ros::NodeHandle n;
-        ros::Subscriber sub = n.subscribe("chatter", 1000, chatterCallback);
-        Vision::setsetCameraID(sub);
-        ros::spin();
-        return 0;
-        }
+    //ROS functions
+
+    void callback_data(const std_msgs::String& msg)
+    {
+        cameraID = msg.data;
     }
