@@ -35,12 +35,13 @@ public:
     void setCameraResolution(int cameraXResolution, int cameraYResolution);
     void setObjectID(int objectID);
     void setXYZCoordinates(float xpersonCoordinate, float ypersonCoordinate, float zpersonCoordinate);
-    void setBoundingboxPosition(float boundingboxHPosition, float boundingboxVPosition);
+    void setDataPersonObjectSub(); //test function to see if object data can be set directly trough ros sub
+    // void setBoundingboxPosition(float boundingboxHPosition, float boundingboxVPosition);
 
     void getCameraResolution(int& cameraXResolution, int& cameraYResolution );
     void getObjectID(int& objectID);
     void getXYZCoordinates(float& xpersonCoordinate, float& ypersonCoordinate, float& zpersonCoordinate);        
-    void getBoundingboxPosition(float& boundingboxHPosition, float& boundingboxVPosition);                                      
+    // void getBoundingboxPosition(float& boundingboxHPosition, float& boundingboxVPosition);                                      
 
 };
 
