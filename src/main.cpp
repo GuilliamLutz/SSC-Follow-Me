@@ -9,8 +9,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // includes
 #include <ros/ros.h>
-#include <visionClass.cpp>
-#include <visionClass.h>
+#include "visionClass.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -30,10 +29,13 @@ using namespace std;
 
 int main (int argc, char **argv)
 {
-    ros::init(argc, argv, "oakD_topic");
-    ros::NodeHandle nh;
-    Vision nc = Vision(&nh);
-    ros::spin();
+    while (ros::ok())
+    {
+        ros::init(argc, argv, "visionSystem");
+        ros::NodeHandle nh;
+        Vision oakD = Vision(&nh);
+        ros::spin();
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

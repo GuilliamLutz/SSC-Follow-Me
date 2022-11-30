@@ -8,6 +8,8 @@
 
 #pragma once
 #include <ros/ros.h>
+#include <std_msgs/Float32MultiArray.h>
+using namespace std;
 
 // Vision Class
 
@@ -18,36 +20,86 @@ private:
     ros::Subscriber vision_sub;
 
 	// private variables
-	char cameraID;
-	int cameraXResolution;
-    int cameraYResolution;
+	char cameraID = 'None';
+	int cameraXResolution = 720;
+    int cameraYResolution = 1080;
     int objectID;
-    float xpersonCoordinate;
-    float ypersonCoordinate;
-    float zpersonCoordinate;
-    float boundingboxHPosition;
-    float boundingboxVPosition;
+    float xpersonCoordinate = 0;
+    float ypersonCoordinate = 0;
+    float zpersonCoordinate = 0;
 
 public:   
 	// constructors
+
 	Vision();
-	Vision(char cameraID, int cameraXResolution, int cameraYResolution, float xpersonCoordinate, float ypersonCoordinate,
-         float zpersonCoordinate, float boundingboxHPosition, float boundingboxVPosition);                //Construct for OAK-D PRO with specific data from AI camera
 
-	// member funtions
-    void setCameraID(char cameraID);                            
-    void setCameraResolution(int cameraXResolution, int cameraYResolution);
-    void setObjectID(int objectID);
-    void setXYZCoordinates(float xpersonCoordinate, float ypersonCoordinate, float zpersonCoordinate);
-    void setDataPersonObjectSub(); //test function to see if object data can be set directly trough ros sub
-    // void setBoundingboxPosition(float boundingboxHPosition, float boundingboxVPosition);
+    Vision(char cameraID, int cameraXResolution, int cameraYResolution, float xpersonCoordinate, float ypersonCoordinate, float zpersonCoordinate)               //Construct for OAK-D PRO with specific data from AI camera
+    {
+       this-> cameraID = cameraID;
 
-    void getCameraResolution(int& cameraXResolution, int& cameraYResolution );
-    void getObjectID(int& objectID);
-    void getXYZCoordinates(float& xpersonCoordinate, float& ypersonCoordinate, float& zpersonCoordinate);        
-    // void getBoundingboxPosition(float& boundingboxHPosition, float& boundingboxVPosition);                                      
-    
-    //ros
-    void callback_data();
+       this-> cameraXResolution = cameraXResolution,
+       this-> cameraYResolution = cameraYResolution;
+
+       this-> xpersonCoordinate = xpersonCoordinate,
+       this-> ypersonCoordinate = ypersonCoordinate,
+       this-> zpersonCoordinate = zpersonCoordinate;
+    }
+
+    // Ros vision subscriber 
+    Vision(ros::NodeHandle *nh) 
+    {  
+        vision_sub = nh->subscribe("/VisionData", 1000, &Vision::callback_data, this);
+    }
+
+    // Member functions for visionClass
+
+    //Setters
+    void setCameraID(char cameraID)
+    {
+       this-> cameraID = cameraID; 
+    }
+
+    void setCameraResolution(int cameraXResolution, int cameraYResolution)
+    {
+        this-> cameraXResolution = cameraXResolution,
+        this-> cameraYResolution = cameraYResolution;
+    }
+
+    void setObjectID(int objectID)
+    {
+        this-> objectID = objectID;
+    }
+
+    void setXYZCoordinates(float xpersonCoordinate, float ypersonCoordinate, float zpersonCoordinate)
+    {
+       this-> xpersonCoordinate = xpersonCoordinate,
+       this-> ypersonCoordinate = ypersonCoordinate,
+       this-> zpersonCoordinate = zpersonCoordinate;       
+    }
+
+     //Getters
+    void getCameraResolution(int& cameraXResolution, int& cameraYResolution)
+    {
+        cameraXResolution = this-> cameraXResolution;
+        cameraYResolution = this-> cameraYResolution;
+    }
+
+    void getObjectID(int& objectID)
+    {
+        objectID = this-> objectID;
+    }
+
+    void getXYZCoordinates(float& xpersonCoordinate, float& ypersonCoordinate, float& zpersonCoordinate)
+    {
+        xpersonCoordinate = this-> xpersonCoordinate;
+        ypersonCoordinate = this-> ypersonCoordinate;
+        zpersonCoordinate = this-> zpersonCoordinate;
+    }
+    //Callback for ROS
+    void callback_data(const std_msgs::Float32MultiArray& msg)
+    {
+
+    }
+
 };
 
