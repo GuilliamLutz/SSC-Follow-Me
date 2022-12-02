@@ -23,30 +23,15 @@ private:
 	char cameraID = 'None';
 	int cameraXResolution = 720;
     int cameraYResolution = 1080;
-    int objectID;
+    float objectID = 2;
     float xpersonCoordinate = 0;
     float ypersonCoordinate = 0;
     float zpersonCoordinate = 0;
 
 public:   
 	// constructors
-
-	Vision();
-
-    Vision(char cameraID, int cameraXResolution, int cameraYResolution, float xpersonCoordinate, float ypersonCoordinate, float zpersonCoordinate)               //Construct for OAK-D PRO with specific data from AI camera
-    {
-       this-> cameraID = cameraID;
-
-       this-> cameraXResolution = cameraXResolution,
-       this-> cameraYResolution = cameraYResolution;
-
-       this-> xpersonCoordinate = xpersonCoordinate,
-       this-> ypersonCoordinate = ypersonCoordinate,
-       this-> zpersonCoordinate = zpersonCoordinate;
-    }
-
     // Ros vision subscriber 
-    Vision(ros::NodeHandle *nh) 
+    Vision(ros::NodeHandle *nh)
     {  
         vision_sub = nh->subscribe("/VisionData", 1000, &Vision::callback_data, this);
     }
@@ -65,7 +50,7 @@ public:
         this-> cameraYResolution = cameraYResolution;
     }
 
-    void setObjectID(int objectID)
+    void setObjectID(float objectID)
     {
         this-> objectID = objectID;
     }
@@ -84,7 +69,7 @@ public:
         cameraYResolution = this-> cameraYResolution;
     }
 
-    void getObjectID(int& objectID)
+    void getObjectID(float& objectID)
     {
         objectID = this-> objectID;
     }
@@ -98,10 +83,9 @@ public:
     //Callback for ROS
     void callback_data(const std_msgs::Float32MultiArray::ConstPtr& msg)
     {
-        float test;
-        test = msg->data[0];
-        ROS_INFO("I heard: [%f]", msg->data[0]);
-        setObjectID(test);
+        this -> objectID = msg->data[0];
+        
+   //    ROS_INFO("I heard: [%f]", msg->data[0]);
     }
 
 };
