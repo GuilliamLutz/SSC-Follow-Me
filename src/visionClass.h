@@ -98,7 +98,10 @@ public:
     //Callback for ROS
     void callback_data(const std_msgs::Float32MultiArray& msg)
     {
-
+        float test;
+        test = msg->data[0];
+        ROS_INFO("I heard: [%f]", msg->data[0]);
+        setObjectID(test);
     }
 
 };

@@ -18,7 +18,7 @@ using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Define ROS publishers
-
+float testvalue = 0;
 
 ////////////////////////////////////////////////////////////////////////////////
 // function prototypes
@@ -29,13 +29,12 @@ using namespace std;
 
 int main (int argc, char **argv)
 {
-    while (ros::ok())
-    {
         ros::init(argc, argv, "visionSystem");
         ros::NodeHandle nh;
         Vision oakD = Vision(&nh);
+        oakD.getObjectID(testvalue);
+        ROS_INFO("[%f]",testvalue);
         ros::spin();
-    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
