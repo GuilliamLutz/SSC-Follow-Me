@@ -1,0 +1,7 @@
+{
+    "ros.distro": "melodic",
+    "files.associations": {
+        "vector": "cpp",
+        "*.tcc": "cpp"
+    }
+}
