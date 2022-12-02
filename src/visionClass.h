@@ -96,7 +96,7 @@ public:
         zpersonCoordinate = this-> zpersonCoordinate;
     }
     //Callback for ROS
-    void callback_data(const std_msgs::Float32MultiArray& msg)
+    void callback_data(const std_msgs::Float32MultiArray::ConstPtr& msg)
     {
         float test;
         test = msg->data[0];
