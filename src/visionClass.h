@@ -93,9 +93,10 @@ public:
     //Callback for ROS
     void callback_data(const std_msgs::Float32MultiArray::ConstPtr& msg)
     {
-        setObjectID(msg->data[0]);
-        this->objectID = msg->data[0];
-        ROS_INFO("I heard: [%f]", msg->data[0]);
+       // setObjectID(msg->data[0]);
+       //this->objectID = msg->data[0];
+       //ROS_INFO("I heard: [%f]", msg->data[0]);
+        ROS_INFO("I heard: [%f]", aa);
     }
 
 };
