@@ -20,7 +20,16 @@ private:
     ros::Subscriber vision_sub;
 
 	// private variables
-	char cameraID = 'None';
+/*	char cameraID = 'None';
+	int cameraXResolution = 720;
+    int cameraYResolution = 1080;
+    float objectID = 2;
+    float xpersonCoordinate = 0;
+    float ypersonCoordinate = 0;
+    float zpersonCoordinate = 0;
+*/
+public:
+    char cameraID = 'None';
 	int cameraXResolution = 720;
     int cameraYResolution = 1080;
     float objectID = 2;
@@ -28,9 +37,10 @@ private:
     float ypersonCoordinate = 0;
     float zpersonCoordinate = 0;
 
-public:   
 	// constructors
     // Ros vision subscriber 
+    Vision();
+
     Vision(ros::NodeHandle *nh)
     {  
         vision_sub = nh->subscribe("/VisionData", 1000, &Vision::callback_data, this);
@@ -83,9 +93,9 @@ public:
     //Callback for ROS
     void callback_data(const std_msgs::Float32MultiArray::ConstPtr& msg)
     {
-        this -> objectID = msg->data[0];
-        
-   //    ROS_INFO("I heard: [%f]", msg->data[0]);
+        setObjectID(msg->data[0]);
+        this->objectID = msg->data[0];
+        ROS_INFO("I heard: [%f]", msg->data[0]);
     }
 
 };

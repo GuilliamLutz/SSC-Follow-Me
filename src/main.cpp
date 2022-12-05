@@ -31,13 +31,17 @@ int main (int argc, char **argv)
 {
         ros::init(argc, argv, "visionSystem");
         ros::NodeHandle nh;
-        while(ros::ok())
-        {
-                Vision oakD(&nh);
+        
+        //        while(ros::ok())
+      //  {
+                Vision oakD = Vision(&nh);
                 oakD.getObjectID(testvalue);
-                ROS_INFO("From main I post:[%f]",testvalue);
-                ros::spinOnce();
-        }
+                if (testvalue != 2)
+                {
+                       ROS_INFO("From main I post:[%f]",testvalue);      
+               }
+                ros::spin();
+     //   }       
 }
 
 ////////////////////////////////////////////////////////////////////////////////
