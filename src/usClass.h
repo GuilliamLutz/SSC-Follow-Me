@@ -19,6 +19,7 @@ private:
         ros::Subscriber us_sub;
 
     // private variables
+        int testvariable;
         bool errorDetected;
         bool usObjectDetected[7];
         bool byteValuesFromUS[8];
@@ -43,17 +44,23 @@ public:
           this -> byteValuesFromUS[8] = bytes;
     }
 
-    void determineObjectDetected(byte )
+    void determineObjectDetected(byte)
     {
  
     }
+    
      //Getters
+     void getTestValue(testvalue)
+     {
+        testvalue = this->testvalue;
+     }
     
     
     //Callback for ROS
     void callback_data(const geometry_msgs::Int16& msg)
     {
-         
+        this -> testvariable = msg.data;
+        ROS_INFO("I heard: [%i]", msg.data);
     }
 
 };
