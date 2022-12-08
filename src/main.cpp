@@ -18,7 +18,9 @@ using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////
 // testing
-float testvalue = 1;
+personCoordinates teststruct;
+float personIDTest = 0;
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // function prototypes
@@ -32,14 +34,13 @@ int main (int argc, char **argv)
         ros::init(argc, argv, "visionSystem");
         ros::NodeHandle nh;
         
-        //        while(ros::ok())
-      //  {
                 Vision oakD = Vision(&nh);
-                oakD.getObjectID(testvalue);
-                if (testvalue != 2)
-                {
-                       ROS_INFO("From main I post:[%f]",testvalue);      
-               }
+                teststruct = oakD.getXYZCoordinates();
+                personIDTest = oakD.getPersonID();
+                ROS_INFO("From main I post x value:[%f]",teststruct.x);
+                ROS_INFO("From main I post y value:[%f]",teststruct.y);
+                ROS_INFO("From main I post z value:[%f]",teststruct.z);
+                ROS_INFO("From main I post personID value:[%f]",personIDTest);      
                 ros::spin();
      //   }       
 }

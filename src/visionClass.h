@@ -10,6 +10,7 @@
 #include <ros/ros.h>
 #include <std_msgs/Float32MultiArray.h>
 using namespace std;
+struct personCoordinates {float x; float y; float z;};
 
 // Vision Class
 
@@ -20,23 +21,10 @@ private:
     ros::Subscriber vision_sub;
 
 	// private variables
-/*	char cameraID = 'None';
-	int cameraXResolution = 720;
-    int cameraYResolution = 1080;
-    float objectID = 2;
-    float xpersonCoordinate = 0;
-    float ypersonCoordinate = 0;
-    float zpersonCoordinate = 0;
-*/
-public:
-    char cameraID = 'None';
-	int cameraXResolution = 720;
-    int cameraYResolution = 1080;
-    float objectID = 2;
-    float xpersonCoordinate = 0;
-    float ypersonCoordinate = 0;
-    float zpersonCoordinate = 0;
+    float personID = 0;
+    struct personCoordinates personCoordinates;
 
+public:
 	// constructors
     // Ros vision subscriber 
     Vision();
@@ -47,57 +35,27 @@ public:
     }
 
     // Member functions for visionClass
-
-    //Setters
-    void setCameraID(char cameraID)
-    {
-       this-> cameraID = cameraID; 
-    }
-
-    void setCameraResolution(int cameraXResolution, int cameraYResolution)
-    {
-        this-> cameraXResolution = cameraXResolution,
-        this-> cameraYResolution = cameraYResolution;
-    }
-
-    void setObjectID(float objectID)
-    {
-        this-> objectID = objectID;
-    }
-
-    void setXYZCoordinates(float xpersonCoordinate, float ypersonCoordinate, float zpersonCoordinate)
-    {
-       this-> xpersonCoordinate = xpersonCoordinate,
-       this-> ypersonCoordinate = ypersonCoordinate,
-       this-> zpersonCoordinate = zpersonCoordinate;       
-    }
-
      //Getters
-    void getCameraResolution(int& cameraXResolution, int& cameraYResolution)
+    float getPersonID()
     {
-        cameraXResolution = this-> cameraXResolution;
-        cameraYResolution = this-> cameraYResolution;
+        return this-> personID;
     }
 
-    void getObjectID(float& objectID)
+    struct personCoordinates getXYZCoordinates()
     {
-        objectID = this-> objectID;
-    }
-
-    void getXYZCoordinates(float& xpersonCoordinate, float& ypersonCoordinate, float& zpersonCoordinate)
-    {
-        xpersonCoordinate = this-> xpersonCoordinate;
-        ypersonCoordinate = this-> ypersonCoordinate;
-        zpersonCoordinate = this-> zpersonCoordinate;
+        return this-> personCoordinates;
     }
     //Callback for ROS
     void callback_data(const std_msgs::Float32MultiArray::ConstPtr& msg)
     {
+        this -> personID = msg->data[0];
+        this -> personCoordinates.x = msg->data[1];
+        this -> personCoordinates.y = msg->data[2];
+        this -> personCoordinates.z = msg->data[3];
        // setObjectID(msg->data[0]);
        //this->objectID = msg->data[0];
        //ROS_INFO("I heard: [%f]", msg->data[0]);
-        ROS_INFO("I heard: [%f]", aa);
+       // ROS_INFO("I heard: [%f]", aa);
     }
-
 };
 
