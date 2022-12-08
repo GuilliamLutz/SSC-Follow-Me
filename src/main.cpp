@@ -31,12 +31,14 @@ int main (int argc, char **argv)
 {
         ros::init(argc, argv, "usSystem");
         ros::NodeHandle nh;
-
+        
         us Us1 = us(&nh);
-        us.getTestValue(testvalue);
+        Us1.getTestValue(testvalue);
+        
         ROS_INFO("[%i]",testvalue);
-     
+        
         ros::spin();
+        
 }
 
 ////////////////////////////////////////////////////////////////////////////////

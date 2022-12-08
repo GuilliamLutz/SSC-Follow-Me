@@ -7,7 +7,7 @@
 // ***************************************************************************
 
 #include <ros/ros.h>
-#include <geometry_msgs/Int16.h>
+#include <std_msgs/Int8.h>
 using namespace std;
 
 // US Class
@@ -19,11 +19,11 @@ private:
         ros::Subscriber us_sub;
 
     // private variables
-        int testvariable;
         bool errorDetected;
         bool usObjectDetected[7];
         bool byteValuesFromUS[8];
 public:   
+        int testvariable =2;
 	// constructors
     // Ros vision subscriber 
     us(ros::NodeHandle *nh)
@@ -34,7 +34,7 @@ public:
     // Member functions for visionClass
 
     //Setters
-    void IntToByte(int intValue)
+  /*  void IntToByte(int intValue)
     {
         char bytes[sizeof intValue];
         std::copy(static_cast<const char*>(static_cast<const void*>(&x)),
@@ -43,24 +43,24 @@ public:
 
           this -> byteValuesFromUS[8] = bytes;
     }
-
-    void determineObjectDetected(byte)
-    {
+*/
+  //  void determineObjectDetected(byte)
+ //   {
  
-    }
+ //   }
     
      //Getters
-     void getTestValue(testvalue)
+     void getTestValue(int& testvalue)
      {
-        testvalue = this->testvalue;
+        testvalue =123;// this->testvariable;
      }
     
     
     //Callback for ROS
-    void callback_data(const geometry_msgs::Int16& msg)
+    void callback_data(const std_msgs::Int8 & msg)
     {
         this -> testvariable = msg.data;
-        ROS_INFO("I heard: [%i]", msg.data);
+        ROS_INFO("I heard: [%i]", testvariable); // msg.data);
     }
 
 };
