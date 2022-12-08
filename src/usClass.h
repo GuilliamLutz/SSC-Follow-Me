@@ -19,11 +19,11 @@ private:
         ros::Subscriber us_sub;
 
     // private variables
+        int testvariable =2;
         bool errorDetected;
         bool usObjectDetected[7];
         bool byteValuesFromUS[8];
 public:   
-        int testvariable =2;
 	// constructors
     // Ros vision subscriber 
     us(ros::NodeHandle *nh)
@@ -50,14 +50,15 @@ public:
  //   }
     
      //Getters
-     void getTestValue(int& testvalue)
+     int getTestValue()
      {
-        testvalue =123;// this->testvariable;
+        testvariable =123;// this->testvariable;
+        return testvariable;
      }
     
     
     //Callback for ROS
-    void callback_data(const std_msgs::Int8 & msg)
+    void callback_data(const std_msgs::Int8& msg)
     {
         this -> testvariable = msg.data;
         ROS_INFO("I heard: [%i]", testvariable); // msg.data);

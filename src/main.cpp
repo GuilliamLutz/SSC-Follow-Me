@@ -33,7 +33,7 @@ int main (int argc, char **argv)
         ros::NodeHandle nh;
         
         us Us1 = us(&nh);
-        Us1.getTestValue(testvalue);
+        testvalue = Us1.getTestValue();
         
         ROS_INFO("[%i]",testvalue);
         
