@@ -19,7 +19,7 @@ using namespace std;
 ////////////////////////////////////////////////////////////////////////////////
 // testing
 personCoordinates teststruct;
-float personIDTest = 0;
+int personIDTest = 0;
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -29,20 +29,23 @@ float personIDTest = 0;
 ////////////////////////////////////////////////////////////////////////////////
 // memberfunction run()
 
-int main (int argc, char **argv)
+int main (int argc,char **argv)
 {
         ros::init(argc, argv, "visionSystem");
         ros::NodeHandle nh;
-        
-                Vision oakD = Vision(&nh);
-                teststruct = oakD.getXYZCoordinates();
+        Vision oakD = Vision(&nh);
+        while(ros::ok())
+          {
+           //     teststruct = oakD.getXYZCoordinates();
                 personIDTest = oakD.getPersonID();
+                teststruct = oakD.getXYZCoordinates();
+                ROS_INFO("[%i]",personIDTest);  
                 ROS_INFO("From main I post x value:[%f]",teststruct.x);
                 ROS_INFO("From main I post y value:[%f]",teststruct.y);
                 ROS_INFO("From main I post z value:[%f]",teststruct.z);
-                ROS_INFO("From main I post personID value:[%f]",personIDTest);      
-                ros::spin();
-     //   }       
+               
+                ros::spinOnce();
+          }       
 }
 
 ////////////////////////////////////////////////////////////////////////////////
