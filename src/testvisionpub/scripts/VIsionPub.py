@@ -8,23 +8,37 @@ import time
 import argparse
 import blobconverter
 
+# import ROS Python library
 import rospy
 from testvisionpub.msg import rfmVision
 
-# Array variant
+# initialise variables for vision data
+objectID = 0
+objectX = 0
+objectY = 0
+objectZ = 0
+
+# defines ROS publisher with node name "VisionData" which publishes a custom message
 def talkerArray(data):
     pub = rospy.Publisher('VisionData', rfmVision, queue_size=10)
     rospy.init_node('talker', anonymous=True)
     #rospy.loginfo(data)
     pub.publish(data)
 
+# change path in Path() to whichever neural network should be used for objectdection
+nnPathDefault = str((Path(__file__).parent / Path('../scripts/nn_models/mobilenet-ssd_openvino_2021.4_5shave.blob')).resolve().absolute())
+
+## line below could be used to directly download models from OpenVINO model zoo, files are saved in cache
+## make sure output data is in line with other models: image_id, label, conf, (x_min, y_min), (x_max, y_max)
+# nnPathDefault = blobconverter.from_zoo(name='person-detection-0203', shaves=5)
+
+# label outputs of standard OpenVINO models
 labelMap = ["background", "aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow",
             "diningtable", "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
 
+# change value to whichever object should be detected from labelMap, [15] is only person
+labelNumber = [15]
 
-# nnPathDefault = str((Path(__file__).parent / Path('../../../../depthai-python/examples/models/person-detection-0201.blob')).resolve().absolute())
-# nnPathDefault = blobconverter.from_zoo(name='person-detection-0203', shaves=5)
-nnPathDefault = str((Path(__file__).parent / Path('../scripts/nn_models/mobilenet-ssd_openvino_2021.4_5shave.blob')).resolve().absolute())
 parser = argparse.ArgumentParser()
 parser.add_argument('nnPath', nargs='?', help="Path to mobilenet detection network blob", default=nnPathDefault)
 parser.add_argument('-ff', '--full_frame', action="store_true", help="Perform tracking on full RGB frame", default=False)
@@ -50,7 +64,7 @@ trackerOut = pipeline.create(dai.node.XLinkOut)
 xoutRgb.setStreamName("preview")
 trackerOut.setStreamName("tracklets")
 
-# Properties
+# change setPreviewSize parameters to whichever resolution the neural network requires
 camRgb.setPreviewSize(300, 300)
 camRgb.setResolution(dai.ColorCameraProperties.SensorResolution.THE_1080_P)
 camRgb.setInterleaved(False)
@@ -74,7 +88,7 @@ spatialDetectionNetwork.setBoundingBoxScaleFactor(0.5)
 spatialDetectionNetwork.setDepthLowerThreshold(100)
 spatialDetectionNetwork.setDepthUpperThreshold(5000)
 
-objectTracker.setDetectionLabelsToTrack([15])  # track only person
+objectTracker.setDetectionLabelsToTrack(labelNumber)  
 # possible tracking types: ZERO_TERM_COLOR_HISTOGRAM, ZERO_TERM_IMAGELESS, SHORT_TERM_IMAGELESS, SHORT_TERM_KCF
 objectTracker.setTrackerType(dai.TrackerType.ZERO_TERM_COLOR_HISTOGRAM)
 # take the smallest ID when new object is tracked, possible options: SMALLEST_ID, UNIQUE_ID
@@ -114,12 +128,11 @@ with dai.Device(pipeline) as device:
     color = (255, 255, 255)
 
     while(True):
-        
-        
 
         imgFrame = preview.get()
         track = tracklets.get()
 
+        # fps counter
         counter+=1
         current_time = time.monotonic()
         if (current_time - startTime) > 1 :
@@ -129,6 +142,9 @@ with dai.Device(pipeline) as device:
 
         frame = imgFrame.getCvFrame()
         trackletsData = track.tracklets
+
+
+        # enters loop if object from indicated labelMap is detected
         for t in trackletsData:
             roi = t.roi.denormalize(frame.shape[1], frame.shape[0])
             x1 = int(roi.topLeft().x)
@@ -150,20 +166,30 @@ with dai.Device(pipeline) as device:
             cv2.putText(frame, f"Y: {int(t.spatialCoordinates.y)} mm", (x1 + 10, y1 + 80), cv2.FONT_HERSHEY_TRIPLEX, 0.5, 255)
             cv2.putText(frame, f"Z: {int(t.spatialCoordinates.z)} mm", (x1 + 10, y1 + 95), cv2.FONT_HERSHEY_TRIPLEX, 0.5, 255)
             
-            
-            # middleX = t.spatialCoordinates.x + x1 / 2
-            # middleY = t.spatialCoordinates.y + y1 / 2
+            # saving coordinates of object in variables to be used later
+            # id + 1 due to id 0 being reserved for no object detected
+            objectID = t.id + 1
+            objectX = t.spatialCoordinates.x
+            objectY = t.spatialCoordinates.y
+            objectZ = t.spatialCoordinates.z
 
-            try:
-                test = rfmVision(t.id + 1, t.spatialCoordinates.x, t.spatialCoordinates.y, t.spatialCoordinates.z)
-                talkerArray(test)
-            except rospy.ROSInterruptException:
-                pass
-  
+        
+        # check if an object has been detected else send no value
+        if objectID:
+            visionData = rfmVision(objectID, objectX, objectY, objectZ)
+        else:
+            visionData = rfmVision(0, 0, 0, 0)
+
+        # publishes id, x, y and z coordinates of detected objects
+        talkerArray(visionData)
+
+        # reset objectID 
+        objectID = 0
 
         cv2.putText(frame, "NN fps: {:.2f}".format(fps), (2, frame.shape[0] - 4), cv2.FONT_HERSHEY_TRIPLEX, 0.4, color)
 
         cv2.imshow("tracker", frame)
 
+        # force quits script when q is pressed
         if cv2.waitKey(1) == ord('q'):
             break
