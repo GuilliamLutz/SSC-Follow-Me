@@ -7,7 +7,7 @@
 // ***************************************************************************
 
 #include <ros/ros.h>
-#include <std_msgs/Int8.h>
+#include <std_msgs/UInt8.h>
 using namespace std;
 
 // US Class
@@ -16,13 +16,12 @@ class us
 {
 private:
     //ros variable
-        ros::Subscriber us_sub;
+    ros::Subscriber us_sub;
 
-    // private variables
-        int testvariable =2;
-        bool errorDetected;
-        bool usObjectDetected[7];
-        bool byteValuesFromUS[8];
+	// private variables
+    bool errorDetected;
+    int sensorValue;
+
 public:   
 	// constructors
     // Ros vision subscriber 
@@ -30,38 +29,31 @@ public:
     {  
         us_sub = nh->subscribe("/objDetectedTopic", 1000, &us::callback_data, this);
     }
-
-    // Member functions for visionClass
-
-    //Setters
-  /*  void IntToByte(int intValue)
-    {
-        char bytes[sizeof intValue];
-        std::copy(static_cast<const char*>(static_cast<const void*>(&x)),
-          static_cast<const char*>(static_cast<const void*>(&x)) + sizeof intValue,
-          bytes);
-
-          this -> byteValuesFromUS[8] = bytes;
-    }
-*/
-  //  void determineObjectDetected(byte)
- //   {
- 
- //   }
     
      //Getters
-     int getTestValue()
-     {
-        testvariable =123;// this->testvariable;
-        return testvariable;
-     }
-    
+    int getSensorValue()
+    {
+        return sensorValue;
+    }
+
+    bool getErrorDetected()
+    {
+        return errorDetected;
+    }
     
     //Callback for ROS
-    void callback_data(const std_msgs::Int8& msg)
+    void callback_data(const std_msgs::UInt8& msg)
     {
-        this -> testvariable = msg.data;
-        ROS_INFO("I heard: [%i]", testvariable); // msg.data);
+        this -> sensorValue = msg.data;
+        if (sensorValue % 2)
+        {
+            errorDetected = true;
+            sensorValue--;
+        }
+        else 
+        {
+            errorDetected = false;
+        }
     }
 
 };
