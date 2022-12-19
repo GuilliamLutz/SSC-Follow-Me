@@ -29,27 +29,28 @@ public:
         motor_pub.publish(driveMsg);
     }
 
-    void driveBackward()
+    void driveBackwards()
     {
-        driveMsg.linear.x = -0.5
+        driveMsg.linear.x = -0.2;
         motor_pub.publish(driveMsg);
     }
 
     void turnRight()
     {
-        driveMsg.angular.z = 0.5
+        driveMsg.angular.z = -0.4;
         motor_pub.publish(driveMsg);
     }
     
      void turnLeft()
     {
-        driveMsg.angular.z = -0.5
+        driveMsg.angular.z = 0.4;
         motor_pub.publish(driveMsg);
     }
 
     void resetDrive()
     {
         driveMsg.linear.x = 0;
+        driveMsg.angular.z = 0;
         motor_pub.publish(driveMsg);
     }
 };
