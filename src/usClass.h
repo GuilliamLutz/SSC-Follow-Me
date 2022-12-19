@@ -10,17 +10,31 @@
 #include <std_msgs/UInt8.h>
 using namespace std;
 
-// US Class
+struct usStruct
+{          
+    bool left;
+    bool leftCorner;     
+    bool lefFront;
+    bool rightFront;
+    bool rightCorner;
+    bool right;   
+    bool rear; 
+    bool error;  
+};
 
+// US Class
 class us
 {
+
 private:
     //ros variable
     ros::Subscriber us_sub;
 
 	// private variables
-    bool errorDetected;
     int sensorValue;
+    int compare;
+    bool usTemp[8];    
+    usStruct usValues;
 
 public:   
 	// constructors
@@ -31,30 +45,46 @@ public:
     }
     
      //Getters
-    int getSensorValue()
+    usStruct getSensorValue()
     {
-        return sensorValue;
-    }
-
-    bool getErrorDetected()
-    {
-        return errorDetected;
+        return usValues;
     }
     
     //Callback for ROS
     void callback_data(const std_msgs::UInt8& msg)
     {
-        this -> sensorValue = msg.data;
-        if (sensorValue % 2)
-        {
-            errorDetected = true;
-            sensorValue--;
-        }
-        else 
-        {
-            errorDetected = false;
-        }
+        fillStruct(msg.data);
     }
 
+    // fill usStruct with sensor values
+    void fillStruct(int data)
+    {
+        compare = 128;
+
+        // splits data integer into array of bools
+        for (int i = 0; i < 8; i++)
+        {
+            if (compare <= data)
+            {
+                usTemp[i] = true;
+                data = data - compare;
+            }
+            else
+            {
+                usTemp[i] = false;
+            }
+            compare = compare / 2;
+        }
+
+        usValues.left = usTemp[0];
+        usValues.leftCorner = usTemp[1];
+        usValues.lefFront = usTemp[2];
+        usValues.rear = usTemp[3];
+        usValues.right = usTemp[4];
+        usValues.rightCorner = usTemp[5];
+        usValues.rightFront = usTemp[6];
+        usValues.error = usTemp[7];
+    }
 };
+
 
