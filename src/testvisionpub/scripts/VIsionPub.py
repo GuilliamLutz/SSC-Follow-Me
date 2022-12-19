@@ -30,14 +30,14 @@ nnPathDefault = str((Path(__file__).parent / Path('../scripts/nn_models/mobilene
 
 ## line below could be used to directly download models from OpenVINO model zoo, files are saved in cache
 ## make sure output data is in line with other models: image_id, label, conf, (x_min, y_min), (x_max, y_max)
-# nnPathDefault = blobconverter.from_zoo(name='person-detection-0203', shaves=5)
+#nnPathDefault = blobconverter.from_zoo(name='person-detection-retail-0013', shaves=5)
 
 # label outputs of standard OpenVINO models
 labelMap = ["background", "aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow",
-            "diningtable", "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
+           "diningtable", "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
 
 # change value to whichever object should be detected from labelMap, [15] is only person
-labelNumber = [15]
+labelNumber = [15] #15 is person
 
 parser = argparse.ArgumentParser()
 parser.add_argument('nnPath', nargs='?', help="Path to mobilenet detection network blob", default=nnPathDefault)
@@ -65,7 +65,7 @@ xoutRgb.setStreamName("preview")
 trackerOut.setStreamName("tracklets")
 
 # change setPreviewSize parameters to whichever resolution the neural network requires
-camRgb.setPreviewSize(300, 300)
+camRgb.setPreviewSize(300,300)
 camRgb.setResolution(dai.ColorCameraProperties.SensorResolution.THE_1080_P)
 camRgb.setInterleaved(False)
 camRgb.setColorOrder(dai.ColorCameraProperties.ColorOrder.BGR)
@@ -130,7 +130,16 @@ with dai.Device(pipeline) as device:
     while(True):
 
         imgFrame = preview.get()
-        track = tracklets.get()
+        track = tracklets.get()        #check if an object has been detected else send no value
+        if objectID == 1:
+            visionData = rfmVision(objectID, objectX, objectY, objectZ)
+            talkerArray(visionData)
+        else:
+            visionData = rfmVision(0, 0, 0, 0)
+
+        #publishes id, x, y and z coordinates of detected objects
+        if objectID == 1:
+            talkerArray(visionData)
 
         # fps counter
         counter+=1
@@ -158,9 +167,10 @@ with dai.Device(pipeline) as device:
                 label = t.label
 
             cv2.putText(frame, str(label), (x1 + 10, y1 + 20), cv2.FONT_HERSHEY_TRIPLEX, 0.5, 255)
-            cv2.putText(frame, f"ID: {[t.id]}", (x1 + 10, y1 + 35), cv2.FONT_HERSHEY_TRIPLEX, 0.5, 255)
+            cv2.putText(frame, f"ID: {[t.id+1]}", (x1 + 10, y1 + 35), cv2.FONT_HERSHEY_TRIPLEX, 0.5, 255)
             cv2.putText(frame, t.status.name, (x1 + 10, y1 + 50), cv2.FONT_HERSHEY_TRIPLEX, 0.5, 255)
             cv2.rectangle(frame, (x1, y1), (x2, y2), color, cv2.FONT_HERSHEY_SIMPLEX)
+            
 
             cv2.putText(frame, f"X: {int(t.spatialCoordinates.x)} mm", (x1 + 10, y1 + 65), cv2.FONT_HERSHEY_TRIPLEX, 0.5, 255)
             cv2.putText(frame, f"Y: {int(t.spatialCoordinates.y)} mm", (x1 + 10, y1 + 80), cv2.FONT_HERSHEY_TRIPLEX, 0.5, 255)
@@ -168,20 +178,21 @@ with dai.Device(pipeline) as device:
             
             # saving coordinates of object in variables to be used later
             # id + 1 due to id 0 being reserved for no object detected
-            objectID = t.id + 1
-            objectX = t.spatialCoordinates.x
-            objectY = t.spatialCoordinates.y
-            objectZ = t.spatialCoordinates.z
+            if t.id == 0 and t.status.name != 'LOST':
+                objectID = t.id + 1
+                objectX = t.spatialCoordinates.x
+                objectY = t.spatialCoordinates.y
+                objectZ = t.spatialCoordinates.z
+        
 
         
-        # check if an object has been detected else send no value
-        if objectID:
+        #check if an object has been detected else send no value
+        if objectID == 1:
             visionData = rfmVision(objectID, objectX, objectY, objectZ)
+            talkerArray(visionData)
         else:
             visionData = rfmVision(0, 0, 0, 0)
-
-        # publishes id, x, y and z coordinates of detected objects
-        talkerArray(visionData)
+            talkerArray(visionData)
 
         # reset objectID 
         objectID = 0
