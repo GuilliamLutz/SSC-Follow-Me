@@ -10,6 +10,14 @@
 #include <ros/ros.h>
 #include "geometry_msgs/Twist.h"
 
+// typical values: TURN_SPEED > 0.4, DRIVE_SPEED > 0.5
+static float TURN_SPEED = 0.3;
+static float DRIVE_SPEED = 0.3;
+static float SPEED_LIMIT = 0.5;
+
+static float Z_SPEED = 0.0006;
+static float X_SPEED = 0.001;
+
 
 class Motorcontrol
 {
@@ -25,7 +33,8 @@ public:
 
     void driveForward()
     {
-        driveMsg.linear.x = 0.5;
+        driveMsg.linear.x = DRIVE_SPEED;
+        driveMsg.angular.z = 0;
         motor_pub.publish(driveMsg);
     }
 
@@ -37,13 +46,13 @@ public:
 
     void turnRight()
     {
-        driveMsg.angular.z = -0.4;
+        driveMsg.angular.z = -TURN_SPEED;
         motor_pub.publish(driveMsg);
     }
     
      void turnLeft()
     {
-        driveMsg.angular.z = 0.4;
+        driveMsg.angular.z = TURN_SPEED;
         motor_pub.publish(driveMsg);
     }
 
@@ -51,6 +60,49 @@ public:
     {
         driveMsg.linear.x = 0;
         driveMsg.angular.z = 0;
+        motor_pub.publish(driveMsg);
+    }
+
+    void strafeLeft() 
+    {
+        driveMsg.linear.x = DRIVE_SPEED;
+        driveMsg.angular.z = TURN_SPEED;
+        motor_pub.publish(driveMsg);
+    }
+
+    void strafeRight()
+    {
+        driveMsg.linear.x = DRIVE_SPEED;
+        driveMsg.angular.z = -TURN_SPEED;
+        motor_pub.publish(driveMsg);
+    }
+
+    void drive(float x, float z) 
+    {
+        z = z - 1000;
+        if (z <= 0)
+        {
+            z = 0;
+            x = -x * X_SPEED * 3;
+            if (x > SPEED_LIMIT)
+            {
+                x = SPEED_LIMIT;
+            }
+        }
+        else 
+        {
+            x = -x * X_SPEED;
+        }
+        if ((z * Z_SPEED) > SPEED_LIMIT) 
+        {
+            z = SPEED_LIMIT;
+        }
+        else
+        {
+            z = z * Z_SPEED;
+        }
+        driveMsg.linear.x = z;
+        driveMsg.angular.z = x;
         motor_pub.publish(driveMsg);
     }
 };
