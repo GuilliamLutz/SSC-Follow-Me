@@ -9,11 +9,13 @@
 #pragma once
 #include <ros/ros.h>
 #include "geometry_msgs/Twist.h"
+#include "math.h"
 
 // typical values: TURN_SPEED > 0.4, DRIVE_SPEED > 0.5
 static float TURN_SPEED = 0.3;
 static float DRIVE_SPEED = 0.3;
-static float SPEED_LIMIT = 0.5;
+static float SPEED_LIMIT = 1;
+static int MINIMAL_DISTANCE = 1000;
 
 static float Z_SPEED = 0.0006;
 static float X_SPEED = 0.001;
@@ -79,28 +81,25 @@ public:
 
     void drive(float x, float z) 
     {
-        z = z - 1000;
+        x = -1.5 * atan(x/z);
+
+
+        // if (x > SPEED_LIMIT) 
+        // {
+        //     x = 0.5;
+        // }
+
+        z = (z - MINIMAL_DISTANCE) * Z_SPEED;
+
         if (z <= 0)
         {
             z = 0;
-            x = -x * X_SPEED * 3;
-            if (x > SPEED_LIMIT)
-            {
-                x = SPEED_LIMIT;
-            }
         }
-        else 
-        {
-            x = -x * X_SPEED;
-        }
-        if ((z * Z_SPEED) > SPEED_LIMIT) 
+        else if ((z) > SPEED_LIMIT) 
         {
             z = SPEED_LIMIT;
         }
-        else
-        {
-            z = z * Z_SPEED;
-        }
+
         driveMsg.linear.x = z;
         driveMsg.angular.z = x;
         motor_pub.publish(driveMsg);
