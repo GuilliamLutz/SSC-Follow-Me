@@ -18,9 +18,6 @@ float operatorZ = 0;
 usStruct usData;
 personCoordinates xyzStruct;
 
-static int THRESHOLD_X = 250;
-static int THRESHOLD_Z = 1000;
-
 
 enum caseStates {Init, Idle, Follow, Obstacle};
 
@@ -53,7 +50,6 @@ int main(int argc,char **argv)
 
         if (isUSObjectDetected(usData) && !isErrorUSDetected(usData))
         {
-
             pioneer.resetDrive();
             ROS_INFO("Drive are set to 0, object detected within 30cm range");
         }
@@ -62,14 +58,14 @@ int main(int argc,char **argv)
 
             switch(currentState)
             {
-                // Case 1: Init
+                // Case 1: Init (currently obsolete)
                 case Init:
                 // Initialize Motorcontroller
                 // Check conditions 
                     currentState = Idle;
                 break; 
 
-                // Case 2: Idle mode
+                // Case 2: Idle mode (currently obsolete)
                 case Idle:
                 
                 //if(Follow_start)
@@ -81,71 +77,20 @@ int main(int argc,char **argv)
 
                 // Case 3: Follow mode
                 case Follow:
-                //ROS_INFO("From main I post:[%f]",operatorZ);
                     if (operatorID == 1)
                     {
                         pioneer.drive(operatorX, operatorZ);
-                        
-                        // if (operatorZ >= THRESHOLD_Z && operatorX >= THRESHOLD_X)
-                        // {
-                        //     pioneer.strafeRight();
-                        //     ROS_INFO("strafe right");
-
-                        // }
-                        // else if (operatorZ >= THRESHOLD_Z && operatorX <= -THRESHOLD_X)
-                        // {
-                        //     pioneer.strafeLeft();
-                        //     ROS_INFO("strafe left");
-
-                        // }
-                        // else if (operatorZ >= THRESHOLD_Z)
-                        // {
-                        //     pioneer.driveForward();
-                        //     ROS_INFO("forward");
-
-                        // }
-                        // else if(operatorX >= THRESHOLD_X)
-                        // {
-                        //     pioneer.turnRight();
-                        //     ROS_INFO("right");
-                        // }
-                        // else if(operatorX <= -THRESHOLD_X)
-                        // {
-                        //     pioneer.turnLeft();
-                        //     ROS_INFO("left");
-                        // }
-                        // // backwards drive not working at the moment
-                        // else if(operatorZ <= 1000.0 && operatorID == 1)
-                        // {
-                        //     pioneer.driveBackwards();
-                        //     ROS_INFO("From backward:[%f]",operatorZ);
-                        // }
                     }
                     else
                     {
                         pioneer.resetDrive();
                     }
-                    // Check if obstacle is detected
-                //    if (usData <= 128)
-                //   {
-                //      currentState = Obstacle;
-                //   }
                 break;
 
-                case Obstacle:
-                    // stop motors
-            //      if(usData > 128)
-            //     {
-            //        case = Follow;
-            //   }
-                    break;
-                
-
-            };
-        }    //        ROS_INFO("From main I post:[%i]",currentState);
+            }
+        }  
         ros::spinOnce();
-        //loop_rate.sleep();
-    };
+    }
  
     return 0;
 }
@@ -153,7 +98,7 @@ int main(int argc,char **argv)
 
 bool isUSObjectDetected(usStruct usFunctionData)
 {
-    if (usData.left || usData.leftCorner || usData.leftFront || usData.rightFront || usData.rightCorner || usData.right ||usData.rear == true)
+    if (usData.left || usData.leftCorner || usData.leftFront || usData.rightFront || usData.rightCorner || usData.right || usData.rear)
     {
         return true;
     }
